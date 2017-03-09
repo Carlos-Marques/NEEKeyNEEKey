@@ -1,10 +1,18 @@
-var five = require("johnny-five");
-var board = new five.Board();
+var five = require('johnny-five');
+var chipio = require('../index'); // or require('chip-io');
 
-board.on("ready", function() {
+var board = new five.Board({
+  io: new chipio()
+});
 
-  // Create a standard `piezo` instance on pin 3
-  var piezo = new five.Piezo(71);
+board.on('ready', function() {
+  // Creates a piezo object and defines the pin to be used for the signal
+  var piezo = new five.Piezo(3);
+
+  // Injects the piezo into the repl
+  board.repl.inject({
+    piezo: piezo
+  });
 
   // Plays a song
   piezo.play({
@@ -33,4 +41,15 @@ board.on("ready", function() {
     ],
     tempo: 100
   });
+
+  // Plays the same song with a string representation
+  piezo.play({
+    // song is composed by a string of notes
+    // a default beat is set, and the default octave is used
+    // any invalid note is read as "no note"
+    song: "C D F D A - A A A A G G G G - - C D F D G - G G G G F F F F - -",
+    beats: 1 / 4,
+    tempo: 100
+  });
+
 });
