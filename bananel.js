@@ -14,5 +14,5 @@ board.on('ready', function() {
 
 pin.read(function(error, value) {
   console.log(value);
-});
+}); 
 });
