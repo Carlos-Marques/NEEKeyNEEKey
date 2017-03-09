@@ -1,20 +1,59 @@
-var Gpio = require('chip-gpio').Gpio;
-var btn = new Gpio(7, 'in', 'both', {
-    debounceTimeout: 500
+var readline = require('readline');
+const nodemailer = require('nodemailer');
+
+var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
 });
-var led = new Gpio(6, 'out');
- 
-btn.watch(function (err, value) {
-    if (err) {
-        throw err;
-    }
-    led.write(led.read() == 1 ? 0 : 1);
-});
- 
-function exit() {
-    btn.unexport();
-    led.unexport();
-    process.exit();
+
+function hidden(query, callback) {
+    var stdin = process.openStdin(),
+        i = 0;
+    process.stdin.on("data", function(char) {
+        char = char + "";
+        switch (char) {
+            case "\n":
+            case "\r":
+            case "\u0004":
+                stdin.pause();
+                break;
+            default:
+                process.stdout.write("\033[2K\033[200D"+query+"["+((i%2==1)?"=-":"-=")+"]");
+                i++;
+                break;
+        }
+    });
+
+    rl.question(query, function(value) {
+        rl.history = rl.history.slice(1);
+        callback(value);
+    });
 }
- 
-process.on('SIGINT', exit);
+
+hidden("password : ", function(password) {
+        // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'carlosmarques.personal@gmail.com',
+            pass: password
+        }
+    });
+
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: '"Banana Master 🍌" <carlosmarques.personal@gmail.com>', // sender address
+        to: 'ricardo.espadinha@neecist.org', // list of receivers
+        subject: '🍌 Banana Warning 🍌', // Subject line
+        text: 'Your banana has been touched...', // plain text body
+        html: '<b>Your banana has been touched...</b>' // html body
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message %s sent: %s', info.messageId, info.response);
+    });
+});
