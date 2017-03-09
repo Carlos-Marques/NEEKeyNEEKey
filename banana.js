@@ -1,4 +1,4 @@
-var readline = require('readline');
+const readline = require('readline');
 const nodemailer = require('nodemailer');
 
 var rl = readline.createInterface({
@@ -43,7 +43,7 @@ hidden("password : ", function(password) {
     // setup email data with unicode symbols
     let mailOptions = {
         from: '"Banana Master 🍌" <carlosmarques.personal@gmail.com>', // sender address
-        to: 'ricardo.espadinha@neecist.org', // list of receivers
+        to: 'isabel.pecastelo@gmail.com', // list of receivers
         subject: '🍌 Banana Warning 🍌', // Subject line
         text: 'Your banana has been touched...', // plain text body
         html: '<b>Your banana has been touched...</b>' // html body
