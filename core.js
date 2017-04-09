@@ -46,6 +46,7 @@ var on = 0;
 
 pin.read(function(error, value) {
   if (value > 60 && on == 0) {
+    on = 1;
     hidden("password : ", function(password) {
         // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
@@ -64,7 +65,7 @@ pin.read(function(error, value) {
             text: 'Your banana has been touched...', // plain text body
             html: '<b>Your banana has been touched...</b>' // html body
         };
-
+        on = 0;
         // send mail with defined transport object
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
